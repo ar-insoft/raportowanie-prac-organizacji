@@ -1,0 +1,61 @@
+.ui.search>.results.transition.visible {
+    width: 46em;
+    max-height: 400px;
+    overflow: auto;
+}
+
+.ui.search>.results .result .search_result>span {
+    margin: 0px 5px;
+}
+
+.ui.search>.results .result .content.search_result {
+    width: 600px;
+}
+
+.search_field>div {
+    width: 600px;
+}
+
+.fields_group {
+    display: flex;
+    border: 1px solid white;
+    align-items: center;
+}
+div.fields_group_niepoprawne_dane {
+    border: 1px solid #e0b4b4;
+}
+div.fields_group_niepoprawne_dane>.search_field>div.ui>input {
+    background-color: #faf1f1;
+}
+.search_status_info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.zlecenie_fields{
+    display: flex;
+    align-items: center;
+}
+div.project_info {
+    align-content: center;
+    text-align: center;
+    max-width: 500px;
+    height: 38px;
+    padding: 0px 10px;
+    overflow: hidden;
+}
+
+.project_info_title {
+    font-weight: bold;
+    padding: 0px 3px 0 0;
+}
+
+.zlecenie_fields > .blad {
+    /* background-color: #e0b4b4; */
+    border-color: #e0b4b4;
+}
+td.niepoprawne_dane {
+    background-color: #e0b4b4;
+    border-color: #e0b4b4;
+}

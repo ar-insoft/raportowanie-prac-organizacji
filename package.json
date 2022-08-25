@@ -1,0 +1,53 @@
+{
+  "name": "raportowanie-prac-organizacji",
+  "homepage": "http://proedims:8080/eoffice/react/raportowanie_prac_organizacji",
+  "proxy": "http://proedims:8080",
+  "version": "0.0.2",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "antd": "^4.10.3",
+    "classnames": "^2.2.6",
+    "preval.macro": "^5.0.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-intl": "^5.10.16",
+    "react-scripts": "4.0.1",
+    "react-toastify": "^6.2.0",
+    "rxjs": "^6.6.3",
+    "semantic-ui-css": "2.4.1",
+    "semantic-ui-react": "^2.0.2",
+    "web-vitals": "^0.2.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "send-build-to-proedims": "send-build-to-proedims",
+    "prebuild": "standard-version",
+    "check-env": "node -e console.log(process.env)"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "standard-version": "^9.1.0"
+  }
+}
