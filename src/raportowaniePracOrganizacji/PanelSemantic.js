@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Button, Table, Container, Segment } from 'semantic-ui-react'
+import { Form, Button, Table, Container, Segment, Dropdown } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
 import './PanelSemantic.css'
 import classNames from 'classnames/bind'
@@ -7,8 +7,6 @@ import _ from 'lodash'
 import { Tlumaczenia } from '../tools/Tlumaczenia'
 import { PracownikSearch} from "./PracownikSearch";
 import { ZlecenieSearch } from './ZlecenieSearch' 
-import { ElementSearch } from './ElementSearch'
-import { OperacjaSearch } from "./OperacjaSearch";
 import { Dzien, GodzinaRozpoczecia, GodzinaZakonczenia } from "./DataIGodziny";
 //import { StatusInfo } from "./StatusInfo";
 //import { DatePicker, TimePicker } from 'antd';
@@ -19,8 +17,6 @@ export const PanelSemantic = ({ params, callbacks }) => {
     const { isLoading, pracownik, id_order_production, id_element, operacjaWybrana, moznaZapisac } = params;
     const pracownikOdczytany = pracownik;
     const zlecenieOdczytane = id_order_production > 0;
-    const elementOdczytany = id_element > 0;
-    const operacjaOdczytana = operacjaWybrana;
     //console.log('PanelSemantic callbacks', callbacks)
     return (
         <Container textAlign='center'>
@@ -41,6 +37,49 @@ export const PanelSemantic = ({ params, callbacks }) => {
                                         <PracownikSearch params={params} callbacks={callbacks}/>
                                 </Table.Cell>
                             </Table.Row>
+                                <Table.Row key='rodzaj'>
+                                    <Table.Cell width={1}>
+                                        <Tlumaczenia id="Rodzaj" />
+                                    </Table.Cell>
+                                    <Table.Cell width={3} className={classNames(
+                                        {
+                                            'niepoprawne_dane': false,
+                                        })}>
+                                        <Dropdown
+                                            upward
+                                            //onChange={(e, dropdownData) => handleDropdownChange(dropdownData, onInfrastructureChange)}
+                                            //value={utils.multiselectStringToArray(infrastructure.possibilitiesToRent)}
+                                            //label={fields.possibilitiesToRent.label}
+                                            name='rodzaj'
+                                            dataUrl='/eoffice/testy/infrastructure_possibilities_to_rent.json'
+                                            multiple selection
+                                            //error={invalidFields.find(o => o.name === 'possibilitiesToRent') !== undefined}
+                                        />
+                                        <Dropdown
+                                            placeholder='Select Friend'
+                                            fluid
+                                            selection
+                                            options={[
+                                                {
+                                                    "value": "Workshop for possible usage",
+                                                    "text": "Workshop for possible usage"
+                                                },
+                                                {
+                                                    "value": "Rental",
+                                                    "text": "Rental"
+                                                },
+                                                {
+                                                    "value": "Research performed by owner",
+                                                    "text": "Research performed by owner"
+                                                },
+                                                {
+                                                    "value": "Usage according to agreement",
+                                                    "text": "Usage according to agreement"
+                                                }
+                                            ]}
+                                        />
+                                    </Table.Cell>
+                                </Table.Row>
                             <Table.Row key='zlecenie'>
                                 <Table.Cell width={1}>
                                     <Tlumaczenia id="Zlecenie" />
@@ -51,30 +90,6 @@ export const PanelSemantic = ({ params, callbacks }) => {
                                     })}>
                                     {/* {zlecenieOdczytane ? raportujZlecenie.zlecenieOpis() : <Tlumaczenia id="brak" />} */}
                                         <ZlecenieSearch params={params} callbacks={callbacks}/>
-                                </Table.Cell>
-                            </Table.Row>
-                            <Table.Row key='element'>
-                                <Table.Cell width={1}>
-                                    <Tlumaczenia id="Element" />
-                                </Table.Cell>
-                                <Table.Cell width={3} className={classNames(
-                                    {
-                                        'niepoprawne_dane': false,
-                                    })}>
-                                    {/* {elementOdczytany ? raportujZlecenie.elementOpis() : <Tlumaczenia id="brak" />} */}
-                                        <ElementSearch params={params} callbacks={callbacks} />
-                                </Table.Cell>
-                            </Table.Row>
-                            <Table.Row key='operacja'>
-                                <Table.Cell width={1}>
-                                    <Tlumaczenia id="Operacja technologiczna" />
-                                </Table.Cell>
-                                <Table.Cell width={3} className={classNames(
-                                    {
-                                        'niepoprawne_dane': false,
-                                    })}>
-                                    {/* <ListaOperacji raportujZlecenie={raportujZlecenie} onChange={this.handleChange} /> */}
-                                        <OperacjaSearch params={params} callbacks={callbacks} />
                                 </Table.Cell>
                             </Table.Row>
                             <Table.Row key='data'>
@@ -101,6 +116,27 @@ export const PanelSemantic = ({ params, callbacks }) => {
                                         <GodzinaZakonczenia params={params} callbacks={callbacks} />
                                 </Table.Cell>
                             </Table.Row>
+                                <Table.Row key='opis'>
+                                    <Table.Cell width={1}>
+                                        <Tlumaczenia id="Opis" />
+                                    </Table.Cell>
+                                    <Table.Cell width={3} className={classNames(
+                                        {
+                                            'niepoprawne_dane': false,
+                                        })}>
+                                        <Form.TextArea id='form-input-name'
+                                            //label={fields.name.label}
+                                            placeholder={'opis'}
+                                            //autoFocus control={TextareaAutosize} rows={1}
+                                            name='opis'
+                                            value={''}
+                                            //onChange={e => handleInputChange(e, onInfrastructureChange)}
+                                            //required={!readOnly}
+                                            //readOnly={readOnly}
+                                            //error={!isFieldValid(infrastructure.name, fields.name.validations, infrastructure)}
+                                        />
+                                    </Table.Cell>
+                                </Table.Row>
                             <Table.Row key='zapisz'>
                                 {/* <Table.Cell>
                                 </Table.Cell> */}

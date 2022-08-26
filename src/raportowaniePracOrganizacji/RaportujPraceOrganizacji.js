@@ -25,9 +25,8 @@ export const RaportujPraceOrganizacji = () => {
     const [zlecenieWybrane, setZlecenieWybrane] = useState(null)
     const refZlecenie = useRef(null);
 
-    const [elementyLoading, setElementyLoading] = useState(false)
-    const [elementyZlecenia, setElementyZlecenia] = useState([])
-    const [elementWybrany, setElementWybrany] = useState(null)
+    const [rodzajLista, setRodzajLista] = useState(null)
+    const [rodzaj, setRodzaj] = useState(null)
     const refElement = useRef(null);
 
     const [operacjeLoading, setOperacjeLoading] = useState(false)
@@ -47,19 +46,15 @@ export const RaportujPraceOrganizacji = () => {
         loadPracownicy()
     }, [])
     useEffect(() => {
-        setElementyZlecenia([])
-        setElementWybrany(null)
         setOperacje([])
         setOperacjaWybrana(null)
-        if (zlecenieWybrane && zlecenieWybrane.id > 0)
-            loadElementyZlecenia(zlecenieWybrane.id)
+        //if (zlecenieWybrane && zlecenieWybrane.id > 0)
+            //loadElementyZlecenia(zlecenieWybrane.id)
     }, [zlecenieWybrane])
     useEffect(() => {
         setOperacje([])
         setOperacjaWybrana(null)
-        if (zlecenieWybrane && zlecenieWybrane.id > 0 && elementWybrany)
-            loadOperacje(zlecenieWybrane.id, elementWybrany.id)
-    }, [zlecenieWybrane, elementWybrany])
+    }, [zlecenieWybrane])
     useEffect(() => {
         const zdefiniowaneObiekty = pracownik && pracownik.id > 0 && operacjaWybrana && data && godzinaStart && godzinaEnd
         const canSave = !!zdefiniowaneObiekty
@@ -77,13 +72,11 @@ export const RaportujPraceOrganizacji = () => {
         setPracownicy(myJson)
     }
 
-    async function loadElementyZlecenia(id_order_production) {
-        setElementyLoading(true)
-        const jsonName = consts.ENDPOINT_URL + '?action=pobierz_elementy_zlecenia_json&id_order_production=' + id_order_production
+    async function loadRodzajLista() {
+        const jsonName = consts.ENDPOINT_URL + '?action=pobierz_rodzaj_lista_json'
         const response = await fetch(jsonName);
         const myJson = await response.json();
-        setElementyLoading(false)
-        setElementyZlecenia(myJson)
+        setRodzajLista(myJson)
         if (myJson.length > 0) {
             // domyslne wybranie glowego elementu
             //setElementWybrany(myJson[myJson.length-1])
@@ -118,8 +111,8 @@ export const RaportujPraceOrganizacji = () => {
         wybierzZlecenie: (zlecenie) => {
             setZlecenieWybrane(zlecenie)
         },
-        wybierzElement: (element) => {
-            setElementWybrany(element)
+        wybierzRodzaj: (rodzaj) => {
+            setRodzaj(rodzaj)
         },
         wybierzOperacje: (operacja) => {
             setOperacjaWybrana(operacja)
@@ -161,7 +154,7 @@ export const RaportujPraceOrganizacji = () => {
         poZapisieWprowadzKolejnaPrace: () => {
             //window.location.assign('/eoffice/react/raportowanie_zakonczonych_prac/index.html');
             //setZlecenieWybrane(null)
-            setElementWybrany(null)
+            setRodzaj(null)
             setGodzinaStart(godzinaEnd)
             setGodzinaEnd(null)
             setPrzepracowano(null)
@@ -177,9 +170,7 @@ export const RaportujPraceOrganizacji = () => {
         zlecenieWybrane,
         refZlecenie,
 
-        elementyLoading,
-        elementyZlecenia,
-        elementWybrany,
+        rodzaj,
         refElement,
 
         operacjeLoading,

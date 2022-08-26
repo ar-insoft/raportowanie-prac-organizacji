@@ -12,7 +12,7 @@ export const ZlecenieSearch = ({ params, callbacks }) => {
     const [zleceniaLista, setZleceniaLista] = React.useState([])
 
     React.useEffect(() => {
-        loadZlecenia(searchText)
+        if (searchText.length > 2) loadZlecenia(searchText)
     }, [searchText])
     React.useEffect(() => {
         if (zlecenieWybrane == null) setSearchText('')
@@ -20,7 +20,7 @@ export const ZlecenieSearch = ({ params, callbacks }) => {
 
     async function loadZlecenia(searchText) {
         setZleceniaLoading(true)
-        const jsonName = consts.ENDPOINT_URL +'?action=pobierz_zlecenia_produkcyjne_json&q=' + searchText
+        const jsonName = consts.ENDPOINT_URL +'?action=pobierz_zlecenia_json&q=' + searchText
         const response = await fetch(jsonName);
         const myJson = await response.json();
         //console.log('myJson', myJson)
