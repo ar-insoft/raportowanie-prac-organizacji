@@ -2,7 +2,7 @@
   "name": "raportowanie-prac-organizacji",
   "homepage": "http://proedims:8080/eoffice/react/raportowanie_prac_organizacji",
   "proxy": "http://proedims:8080",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
