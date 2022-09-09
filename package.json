@@ -2,7 +2,7 @@
   "name": "raportowanie-prac-organizacji",
   "homepage": "http://proedims:8080/eoffice/react/raportowanie_prac_organizacji",
   "proxy": "http://proedims:8080",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "private": true,
   "dependencies": {
     "@tanstack/react-query": "^4.2.3",
