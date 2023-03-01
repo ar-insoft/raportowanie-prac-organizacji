@@ -2,4 +2,4 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 This project is for internal use.
 
 ## Raportowanie-prac-organizacji React App
-![ekran raportowania](doc/screen_nowa_zakonczona_praca.png?raw=true "ekran raportowania")
+![ekran raportowania](doc/screen.png?raw=true "ekran raportowania")
