@@ -6,6 +6,8 @@ import classNames from 'classnames/bind'
 import _ from 'lodash'
 import { Tlumaczenia } from '../tools/Tlumaczenia'
 import { PracownikSearch} from "./PracownikSearch";
+import { RodzajDropdown } from './RodzajDropdown'
+import { RodzajQuery } from './RodzajQuery'
 import { ZlecenieSearch } from './ZlecenieSearch' 
 import { Dzien, GodzinaRozpoczecia, GodzinaZakonczenia } from "./DataIGodziny";
 //import { StatusInfo } from "./StatusInfo";
@@ -14,9 +16,8 @@ import { Dzien, GodzinaRozpoczecia, GodzinaZakonczenia } from "./DataIGodziny";
 import { from } from 'rxjs';
 
 export const PanelSemantic = ({ params, callbacks }) => {
-    const { isLoading, pracownik, id_order_production, id_element, operacjaWybrana, moznaZapisac } = params;
-    const pracownikOdczytany = pracownik;
-    const zlecenieOdczytane = id_order_production > 0;
+    const { isLoading, pracownik, opis, moznaZapisac } = params;
+    //const pracownikOdczytany = pracownik;
     //console.log('PanelSemantic callbacks', callbacks)
     return (
         <Container textAlign='center'>
@@ -35,49 +36,16 @@ export const PanelSemantic = ({ params, callbacks }) => {
                                     })}>
                                     {/* {pracownikOdczytany ? raportujZlecenie.getEmployeeFulname() : <Tlumaczenia id="brak" />} */}
                                         <PracownikSearch params={params} callbacks={callbacks}/>
+                                        {/* {_.get(pracownik, 'planDnia.zlecenie.index', '')} */}
                                 </Table.Cell>
                             </Table.Row>
                                 <Table.Row key='rodzaj'>
                                     <Table.Cell width={1}>
                                         <Tlumaczenia id="Rodzaj" />
                                     </Table.Cell>
-                                    <Table.Cell width={3} className={classNames(
-                                        {
-                                            'niepoprawne_dane': false,
-                                        })}>
-                                        <Dropdown
-                                            upward
-                                            //onChange={(e, dropdownData) => handleDropdownChange(dropdownData, onInfrastructureChange)}
-                                            //value={utils.multiselectStringToArray(infrastructure.possibilitiesToRent)}
-                                            //label={fields.possibilitiesToRent.label}
-                                            name='rodzaj'
-                                            dataUrl='/eoffice/testy/infrastructure_possibilities_to_rent.json'
-                                            multiple selection
-                                            //error={invalidFields.find(o => o.name === 'possibilitiesToRent') !== undefined}
-                                        />
-                                        <Dropdown
-                                            placeholder='Select Friend'
-                                            fluid
-                                            selection
-                                            options={[
-                                                {
-                                                    "value": "Workshop for possible usage",
-                                                    "text": "Workshop for possible usage"
-                                                },
-                                                {
-                                                    "value": "Rental",
-                                                    "text": "Rental"
-                                                },
-                                                {
-                                                    "value": "Research performed by owner",
-                                                    "text": "Research performed by owner"
-                                                },
-                                                {
-                                                    "value": "Usage according to agreement",
-                                                    "text": "Usage according to agreement"
-                                                }
-                                            ]}
-                                        />
+                                    <Table.Cell width={3}>
+                                        {/* <RodzajDropdown params={params} callbacks={callbacks} /> */}
+                                        <RodzajQuery params={params} callbacks={callbacks} />
                                     </Table.Cell>
                                 </Table.Row>
                             <Table.Row key='zlecenie'>
@@ -129,8 +97,8 @@ export const PanelSemantic = ({ params, callbacks }) => {
                                             placeholder={'opis'}
                                             //autoFocus control={TextareaAutosize} rows={1}
                                             name='opis'
-                                            value={''}
-                                            //onChange={e => handleInputChange(e, onInfrastructureChange)}
+                                            value={opis}
+                                            onChange={(e, data) => callbacks.ustawOpis(data.value)}
                                             //required={!readOnly}
                                             //readOnly={readOnly}
                                             //error={!isFieldValid(infrastructure.name, fields.name.validations, infrastructure)}

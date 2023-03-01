@@ -34,4 +34,10 @@ export const DataProvider = {
             .catch(error => errorHandler(error))
     },
 
+    fetchRodzajLista: async () => {
+        const jsonName = consts.ENDPOINT_URL + '?action=pobierz_rodzaj_lista_json'
+        const response = await fetch(jsonName);
+        return response.json();
+    }
+
 }

@@ -9,6 +9,9 @@ export const PracownikSearch = ({ params, callbacks }) => {
     const [pracownicyFilter, setPracownicyFilter] = React.useState(pracownicy)
     React.useEffect(() => { filrtujPracownikow(pracownicy, '')}, [pracownicy])
     const [searchText, setSearchText] = React.useState('')
+    React.useEffect(() => {
+        if (pracownik == null) setSearchText('')
+    }, [pracownik])
 
     const filrtujPracownikow = (pracownicy, filterText) => {
         const re = new RegExp(_.escapeRegExp(filterText), 'i')

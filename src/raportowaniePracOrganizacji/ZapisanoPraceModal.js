@@ -23,17 +23,16 @@ export const ZapisanoPraceModal = ({ params, callbacks }) => {
                 <Modal.Content>
                     <Modal.Description>
                         {/* <Header>Default Profile Image</Header> */}
-                        <p>Pracownik: {ostatnioZapisanaPraca.emp_surname + ' ' + ostatnioZapisanaPraca.emp_name}</p>
-                        <p>Zlecenie: {ostatnioZapisanaPraca.zlecenie_index + ' ' + ostatnioZapisanaPraca.zlecenie_title}</p>
-                        <p>Element: {ostatnioZapisanaPraca.wyrob_index + ' ' + ostatnioZapisanaPraca.wyrob_title}</p>
-                        <p>Operacja: {ostatnioZapisanaPraca.operacja_structure_position + ' ' + ostatnioZapisanaPraca.operacja_title}</p>
-                        <p>Czas pracy: {ostatnioZapisanaPraca.start_task_time + ' ' + ostatnioZapisanaPraca.end_task_time}</p>
+                        <p>Pracownik: {ostatnioZapisanaPraca.employee}</p>
+                        <p>Rodzaj: {ostatnioZapisanaPraca.rodzaj}</p>
+                        <p>Zlecenie: {ostatnioZapisanaPraca.order.object_index + ' ' + ostatnioZapisanaPraca.order.title}</p>
+                        <p>Czas pracy: {ostatnioZapisanaPraca.date + ' ' + ostatnioZapisanaPraca.start_time + ' - ' + ostatnioZapisanaPraca.end_time}</p>
                     </Modal.Description>
                 </Modal.Content>
             }
             <Modal.Actions>
                 <Button
-                    content="OK, zapisz kolejną pracę"
+                    content="OK, zapisz kolejną dla pracownika"
                     labelPosition='right'
                     icon='checkmark'
                     onClick={() => {
@@ -44,9 +43,10 @@ export const ZapisanoPraceModal = ({ params, callbacks }) => {
                 />
                 <Button color='black' onClick={() => {
                     setOpenModal(false);
-                    window.location.assign('/eoffice/production/raport_prac_zakonczonych.xml?action=list&refreshTree=false&go=false&changetree=false');
+                    callbacks.poZapisieWyczysc()
+                    //window.location.assign('/eoffice/production/raport_prac_zakonczonych.xml?action=list&refreshTree=false&go=false&changetree=false');
                 }}>
-                    Powrót do listy
+                    Powrót
                     </Button>
                 {/* <Button color='black' onClick={() => {
                     setOpenModal(false);

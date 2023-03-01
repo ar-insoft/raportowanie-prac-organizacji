@@ -24,6 +24,7 @@
 div.fields_group_niepoprawne_dane {
     border: 1px solid #e0b4b4;
 }
+div.fields_group_niepoprawne_dane>div#rodzaj_select,
 div.fields_group_niepoprawne_dane>.search_field>div.ui>input {
     background-color: #faf1f1;
 }

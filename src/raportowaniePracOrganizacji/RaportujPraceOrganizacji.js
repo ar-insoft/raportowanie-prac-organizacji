@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { IntlProvider } from 'react-intl'
 //import _ from 'lodash'
 import './RaportujPraceOrganizacji.css'
 import { messagesOf } from '../tools/i18nConfig'
 import { consts, DataProvider } from './DataProvider'
+import { ustawGodzinyRopoczeciaZakonczenia } from './DataIGodziny'
 import { PanelSemantic } from './PanelSemantic';
 import { ZapisanoPraceModal } from './ZapisanoPraceModal'
 //import { from } from 'rxjs';
+
+const queryClient = new QueryClient()
 
 export const RaportujPraceOrganizacji = () => {
     const parsedUrl = new URL(window.location.href)
@@ -29,10 +34,7 @@ export const RaportujPraceOrganizacji = () => {
     const [rodzaj, setRodzaj] = useState(null)
     const refElement = useRef(null);
 
-    const [operacjeLoading, setOperacjeLoading] = useState(false)
-    const [operacje, setOperacje] = useState([])
-    const [operacjaWybrana, setOperacjaWybrana] = useState(null)
-    const refOperacja = useRef(null);
+    const [opis, setOpis] = useState('')
 
     const [data, setData] = useState(null)
     const refDate = useRef(null);
@@ -44,23 +46,14 @@ export const RaportujPraceOrganizacji = () => {
 
     useEffect(() => {
         loadPracownicy()
+        loadRodzajLista()
     }, [])
     useEffect(() => {
-        setOperacje([])
-        setOperacjaWybrana(null)
-        //if (zlecenieWybrane && zlecenieWybrane.id > 0)
-            //loadElementyZlecenia(zlecenieWybrane.id)
-    }, [zlecenieWybrane])
-    useEffect(() => {
-        setOperacje([])
-        setOperacjaWybrana(null)
-    }, [zlecenieWybrane])
-    useEffect(() => {
-        const zdefiniowaneObiekty = pracownik && pracownik.id > 0 && operacjaWybrana && data && godzinaStart && godzinaEnd
+        const zdefiniowaneObiekty = pracownik && pracownik.id > 0 && zlecenieWybrane && rodzaj && data && godzinaStart && godzinaEnd
         const canSave = !!zdefiniowaneObiekty
         //console.log('canSave', canSave)
         setMoznaZapisac(canSave)
-    }, [pracownik, operacjaWybrana, data, godzinaStart, godzinaEnd])
+    }, [pracownik, zlecenieWybrane, rodzaj, data, godzinaStart, godzinaEnd])
 
     async function loadPracownicy() {
         setIsLoading(true)
@@ -81,42 +74,34 @@ export const RaportujPraceOrganizacji = () => {
             // domyslne wybranie glowego elementu
             //setElementWybrany(myJson[myJson.length-1])
         }
-        refElement.current.tryOpen()
-    }
-
-    async function loadOperacje(id_order_production, id_element) {
-        setOperacjeLoading(true)
-        const jsonName = consts.ENDPOINT_URL + '?action=pobierz_operacje_zlecenia_json&id_order_production=' + id_order_production +
-            '&id_element=' + id_element
-        const response = await fetch(jsonName);
-        const myJson = await response.json();
-        setOperacjeLoading(false)
-        setOperacje(myJson)
-        refOperacja.current.tryOpen()
+        //refElement.current.tryOpen()
     }
 
     const callbacks = {
         setLoadind: (loading) => setIsLoading(loading),
         setZapisanoPraceModalOpen: (open) => setZapisanoPraceModalOpen(open),
         wybierzPracownika: (pracownik) => {
-            // console.log('wybierzPracownika id', id)
-            // const index = _.findIndex(pracownicy, { 'id': id });
-            // if (index > -1) {
-            //     setPracownik(pracownicy[index])
-            // }
-            //console.log('wybierzPracownika ', pracownik)
             setPracownik(pracownik)
-            if (pracownik) document.getElementById('zlecenie_search').focus()
-        },
-        wybierzZlecenie: (zlecenie) => {
-            setZlecenieWybrane(zlecenie)
+            if (pracownik) {
+                if (pracownik.planDnia) {
+                    if (pracownik.planDnia.zlecenie) {
+                        setZlecenieWybrane(pracownik.planDnia.zlecenie)
+                    }
+                    ustawGodzinyRopoczeciaZakonczenia(pracownik.planDnia.start_time, pracownik.planDnia.end_time, {params, callbacks})
+                }
+                document.getElementById('rodzaj_select').focus()
+            }
         },
         wybierzRodzaj: (rodzaj) => {
             setRodzaj(rodzaj)
+            if (rodzaj) {
+                document.getElementById('zlecenie_search').focus()
+                console.log('wybierzRodzaj', rodzaj)
+            }
         },
-        wybierzOperacje: (operacja) => {
-            setOperacjaWybrana(operacja)
-            refDate.current.focus()
+        wybierzZlecenie: (zlecenie) => {
+            setZlecenieWybrane(zlecenie)
+            if (zlecenie) refDate.current.focus()
         },
         wybierzDate: (dzien) => {
             setData(dzien)
@@ -130,15 +115,21 @@ export const RaportujPraceOrganizacji = () => {
         wybierzPrzepracowano: (czas) => {
             setPrzepracowano(czas)
         },
+        ustawOpis: (opis) => {
+            setOpis(opis)
+            console.log('ustawOpis', opis)
+        },
         zapiszPrace: () => {
             setIsLoading(true)
             DataProvider.wyslijNaSerwer(
                 {
                     employeeId: pracownik.id,
-                    operacjaId: operacjaWybrana.id,
+                    rodzaj: rodzaj,
+                    zlecenieId: zlecenieWybrane.id,
                     date: data.format("yyyy-MM-DD"),
                     start_task_time: godzinaStart.format("HH:mm") + ":00",
                     end_task_time: godzinaEnd.format("HH:mm") + ":00",
+                    opis: opis,
                 },
                 fromServer => {
                     //console.log('zapiszPrace fromServer', fromServer)
@@ -154,10 +145,21 @@ export const RaportujPraceOrganizacji = () => {
         poZapisieWprowadzKolejnaPrace: () => {
             //window.location.assign('/eoffice/react/raportowanie_zakonczonych_prac/index.html');
             //setZlecenieWybrane(null)
-            setRodzaj(null)
+            //setRodzaj(null)
             setGodzinaStart(godzinaEnd)
             setGodzinaEnd(null)
             setPrzepracowano(null)
+        },
+        poZapisieWyczysc: () => {
+            //window.location.assign('/eoffice/react/raportowanie_zakonczonych_prac/index.html');
+            setPracownik(null)
+            setZlecenieWybrane(null)
+            setRodzaj(null)
+            setData(null)
+            setGodzinaStart(null)
+            setGodzinaEnd(null)
+            setPrzepracowano(null)
+            setOpis('')
         }
     }
     const params = {
@@ -171,12 +173,10 @@ export const RaportujPraceOrganizacji = () => {
         refZlecenie,
 
         rodzaj,
+        rodzajLista,
         refElement,
 
-        operacjeLoading,
-        operacje,
-        operacjaWybrana,
-        refOperacja,
+        opis,
 
         refDate,
         data,
@@ -201,20 +201,23 @@ export const RaportujPraceOrganizacji = () => {
     }
 
     return (
-        <IntlProvider locale={lang} messages={messagesOf(lang)}>
-            <div className="mainPanel">
-                <header id="main_header">
-                    Raportuj pracę organizacji
-                </header>
-                <PanelSemantic params={params} callbacks={callbacks} />
-            </div>
-            <ToastContainer
-                position={toast.POSITION.TOP_RIGHT}
-                closeOnClick={false}
-                autoClose={6000}
-                hideProgressBar={true}
-            />
-            <ZapisanoPraceModal params={params} callbacks={callbacks} />
-        </IntlProvider>
+        <QueryClientProvider client={queryClient}>
+            <IntlProvider locale={lang} messages={messagesOf(lang)}>
+                <div className="mainPanel">
+                    <header id="main_header">
+                        Raportuj pracę organizacji
+                    </header>
+                    <PanelSemantic params={params} callbacks={callbacks} />
+                </div>
+                <ToastContainer
+                    position={toast.POSITION.TOP_RIGHT}
+                    closeOnClick={false}
+                    autoClose={6000}
+                    hideProgressBar={true}
+                />
+                <ZapisanoPraceModal params={params} callbacks={callbacks} />
+            </IntlProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
     )
 }

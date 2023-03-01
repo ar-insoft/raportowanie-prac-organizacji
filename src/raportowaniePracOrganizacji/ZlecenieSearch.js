@@ -16,6 +16,7 @@ export const ZlecenieSearch = ({ params, callbacks }) => {
     }, [searchText])
     React.useEffect(() => {
         if (zlecenieWybrane == null) setSearchText('')
+        else setSearchText(zlecenieWybrane.index + ' ' + zlecenieWybrane.title)
     }, [zlecenieWybrane])
 
     async function loadZlecenia(searchText) {
@@ -34,14 +35,13 @@ export const ZlecenieSearch = ({ params, callbacks }) => {
     }
     const onSelect = (zlecenie) => {
         callbacks.wybierzZlecenie(zlecenie)
-        setSearchText(zlecenie.index + ' ' + zlecenie.title)
     }
     const clearSelection = () => {
         callbacks.wybierzZlecenie(null)
-        setSearchText('')
+        //setSearchText('')
     }
     const handleBlur = (e, data) => {
-        console.log('ZlecenieSearch.handleBlur')
+        //console.log('ZlecenieSearch.handleBlur')
     }
     return (
         <div className={classNames(

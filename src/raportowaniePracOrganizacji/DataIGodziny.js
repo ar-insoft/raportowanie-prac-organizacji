@@ -6,28 +6,25 @@ import { StatusInfo } from "./StatusInfo";
 
 export const Dzien = ({ params, callbacks }) => {
     const { data, refDate } = params;
-    function disabledDate(current) {
-        return current && current > moment().endOf('day');
-    }
     return (
         <div className={classNames(
             {
                 'fields_group': true,
                 'fields_group_niepoprawne_dane': !data,
             })}>
-            <DatePicker bordered={false} placeholder='Wybierz datę' ref={refDate}
+            <DatePicker id='dzien_picker' bordered={false} placeholder='Wybierz datę' ref={refDate}
+                value={data}
                 onChange={(date, dateString) => callbacks.wybierzDate(date)} 
-                disabledDate={disabledDate} />
+                />
             <StatusInfo poprawneDane={data} />
         </div>
     )
 }
 
 export const GodzinaRozpoczecia = ({ params, callbacks }) => {
-    const { data, godzinaStart, godzinaEnd, przepracowano } = params;
+    const { godzinaStart, godzinaEnd, przepracowano } = params;
 
     const handleGodzinaRozpoczecia = (czas) => {
-        //console.log('wybierzGodzineRozpoczecia', czas)
         if (!moment.isMoment(czas)) {
             callbacks.wybierzGodzineRozpoczecia(null)
             callbacks.wybierzPrzepracowano(momentZERO())
@@ -56,7 +53,7 @@ export const GodzinaRozpoczecia = ({ params, callbacks }) => {
                 'fields_group_niepoprawne_dane': !godzinaStart,
             })}>
             <TimePicker bordered={false} format='HH:mm' placeholder='rozpoczęcie' showNow={false} 
-                disabledHours={() => disabledHours(data)}
+                //disabledHours={() => disabledHours(data)}
                 onSelect={handleGodzinaRozpoczecia}
                 onChange={handleGodzinaRozpoczecia}
                 value={godzinaStart} />
@@ -69,29 +66,11 @@ export const GodzinaRozpoczecia = ({ params, callbacks }) => {
 }
 
 export const GodzinaZakonczenia = ({ params, callbacks }) => {
-    const { data, godzinaStart, godzinaEnd, przepracowano } = params;
+    const { godzinaStart, godzinaEnd, przepracowano } = params;
     const format = 'HH:mm';
 
     const handleGodzinaZakonczenia = (czas) => {
-        if (!moment.isMoment(czas)) {
-            callbacks.wybierzGodzineZakonczenia(null)
-            callbacks.wybierzPrzepracowano(momentZERO())
-            return
-        }
-        const czasNormalized = normalizeTime(czas)
-        callbacks.wybierzGodzineZakonczenia(czasNormalized)
-        if (godzinaStart && czasNormalized) {
-            if (czasNormalized.isBefore(godzinaStart)) {
-                callbacks.wybierzGodzineRozpoczecia(czasNormalized);
-                callbacks.wybierzPrzepracowano(momentZERO())
-            } else {
-                callbacks.wybierzPrzepracowano(wyliczPrzepracowano(godzinaStart, czasNormalized))
-            }
-            return
-        }
-        if (czasNormalized && przepracowano) {
-            callbacks.wybierzGodzineRozpoczecia(wyliczCzasRozpoczecia(czasNormalized, przepracowano));
-        }
+        zmianaGodzinaZakonczenia(czas, { params, callbacks })
     }
 
     const handlePrzepracowano = (czas) => {
@@ -117,7 +96,7 @@ export const GodzinaZakonczenia = ({ params, callbacks }) => {
                 'fields_group_niepoprawne_dane': !godzinaEnd,
             })}>
             <TimePicker bordered={false} format={format} placeholder='zakończenie'
-                disabledHours={() => disabledHours(data)}
+                //disabledHours={() => disabledHours(data)}
                 onSelect={handleGodzinaZakonczenia}
                 onChange={handleGodzinaZakonczenia} value={godzinaEnd} />
                 lub po przepracowaniu
@@ -125,13 +104,47 @@ export const GodzinaZakonczenia = ({ params, callbacks }) => {
                 disabledMinutes={przepracowanoDisabledMinutes}
                 onSelect={handlePrzepracowano}
                 onChange={handlePrzepracowano} value={przepracowano} />
-            <StatusInfo poprawneDane={godzinaEnd && !godzinaPozniejszaOdBiezacej(data, godzinaEnd)} />
-            {
-                godzinaPozniejszaOdBiezacej(data, godzinaEnd) &&
-                <span style={{ color: "red" }}>Godzina zakończenia późniejsza od bieżącej</span>
-            }
+            <StatusInfo poprawneDane={godzinaEnd} />
         </div>
     )
+}
+
+/**
+ * Formatuje parametry wejściowe i ustawia kontrolki czasu.
+ * @param {string} godzinaRozpoczecia - godzina rozpoczęcia w formacie HH:mm:ss.
+ * @param {string} godzinaZakonczenia - godzina zakończenia w formacie HH:mm:ss.
+ * @param {object} object - obiekt zawierający {params, callbacks} wysyłany do Komponentów.
+ */
+export const ustawGodzinyRopoczeciaZakonczenia = (godzinaRozpoczecia, godzinaZakonczenia, { params, callbacks }) => {
+    const start = moment("2021-01-01 " + godzinaRozpoczecia, "yyyy-MM-DD HH:mm:ss")
+    const end = moment("2021-01-01 " + godzinaZakonczenia, "yyyy-MM-DD HH:mm:ss")
+
+    callbacks.wybierzGodzineRozpoczecia(start)
+    const parametry = { godzinaStart: start, przepracowano: null }
+    zmianaGodzinaZakonczenia(end, { params: parametry, callbacks})
+}
+
+const zmianaGodzinaZakonczenia = (godzinaEnd, { params, callbacks }) => {
+    const { godzinaStart, przepracowano } = params;
+    if (!moment.isMoment(godzinaEnd)) {
+        callbacks.wybierzGodzineZakonczenia(null)
+        callbacks.wybierzPrzepracowano(momentZERO())
+        return
+    }
+    const czasNormalized = normalizeTime(godzinaEnd)
+    callbacks.wybierzGodzineZakonczenia(czasNormalized)
+    if (godzinaStart && czasNormalized) {
+        if (czasNormalized.isBefore(godzinaStart)) {
+            callbacks.wybierzGodzineRozpoczecia(czasNormalized);
+            callbacks.wybierzPrzepracowano(momentZERO())
+        } else {
+            callbacks.wybierzPrzepracowano(wyliczPrzepracowano(godzinaStart, czasNormalized))
+        }
+        return
+    }
+    if (czasNormalized && przepracowano) {
+        callbacks.wybierzGodzineRozpoczecia(wyliczCzasRozpoczecia(czasNormalized, przepracowano));
+    }
 }
 
 function momentZERO() {
@@ -164,16 +177,6 @@ function wyliczPrzepracowano(start, end) {
         return przepracowano
     }
     return momentZERO()
-}
-
-function disabledHours(data) {
-    var hours = [];
-    if (moment.isMoment(data) && data.isSame(moment(), 'day')) {
-        for (var i = moment().hour() + 1; i < 24; i++) {
-            hours.push(i);
-        }
-    }
-    return hours;
 }
 
 function przepracowanoDisabledMinutes(selectedHour) {
